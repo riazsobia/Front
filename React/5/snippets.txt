@@ -1,0 +1,233 @@
+Tłumaczenia
+
+1. Instalacja
+
+npm install i18next@21.8.7 react-i18next@11.16.11 i18next-browser-languagedetector@6.1.4
+
+2. Utowrzenie pliku konfiguracyjnego (.../src/services/i18n.js)
+
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
+
+export default i18n
+  // detect user language
+  // learn more: https://github.com/i18next/i18next-browser-languageDetector
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  // init i18next
+  // for all options read: https://www.i18next.com/overview/configuration-options
+  .init({
+    debug: true,
+    fallbackLng: "en",
+    interpolation: {
+      escapeValue: false, // not needed for react as it escapes by default
+    },
+    resources: {
+      en: {
+        translation: {},
+      },
+    },
+  });
+
+
+3. Import skryptu (index.js)
+
+import "./services/i18n";
+
+4. Dodaj pierwsze tłumaczenia (i18next.js)
+
+resources: {
+      en: {
+        translation: {
+          courses_list: "Courses List",
+          add_course: "Add course",
+        },
+      },
+    },
+
+5. Użycie tłumaczeń w widoku
+
+import { useTranslation, Trans } from "react-i18next";
+
+<Trans i18nKey="courses_list"></Trans>
+
+const { t } = useTranslation();
+{t("add_course")}
+
+
+
+6. Zmiana języka (NavBar.js)
+
+import { useTranslation } from "react-i18next";
+
+const { t, i18n } = useTranslation();
+
+const lngs = ["en", "pl"];
+
+  function handleLanguageChange({ target }) {
+    i18n.changeLanguage(target.value);
+  }
+
+<li className="nav-item">
+            <select
+              className="form-select"
+              id="language"
+              name="language"
+              value={i18n.language}
+              onChange={handleLanguageChange}
+            >
+              {lngs.map((option) => {
+                return (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                );
+              })}
+            </select>
+          </li>
+
+6a. Tłumaczenia dla języka polskiego (i18n.js)
+
+resources: {
+      en: {
+        translation: {
+          courses_list: "Courses List",
+          add_course: "Add course",
+        },
+      },
+      pl: {
+        translation: {
+          courses_list: "Lista kursów",
+          add_course: "Dodaj kurs",
+        },
+      },
+    },
+
+7. Ładowanie tłumaczeń z pliku
+
+a. instalacja
+
+npm install i18next-http-backend@1.4.1
+
+
+b. użycie (i18n.js)
+import Backend from "i18next-http-backend";
+
+.use(Backend)
+
+c. usunąć resources z konfiguracji (i18n.js)
+
+.init({
+    debug: true,
+    fallbackLng: "en",
+    interpolation: {
+      escapeValue: false, // not needed for react as it escapes by default
+    },
+  })
+
+
+8. Utworzenie pliku tłumaczeń (public->locales->en->translation.json)
+
+{
+    "courses_list": "Courses List",
+    "add_course": "Add course"
+}
+
+8a. Utworzenie pliku tłumaczeń (public->locales->pl->translation.json)
+
+{
+    "courses_list": "Lista kursów",
+    "add_course": "Dodaj kurs"
+}
+
+9. Suspense
+
+import React, { Suspense } from "react";
+
+<Suspense fallback="... is loading">
+          <App />
+        </Suspense>
+
+10. Zadanie - dodać tłumaczenia dla CourseTable.js
+
+
+Testy
+
+1. Instalacja
+
+npm install --save-dev jest@23.6.0
+npm i react-test-renderer --save-dev
+
+2. Importy (src/components/Star.test.js)
+
+import React from "react";
+import Star from "./Star";
+import renderer from "react-test-renderer";
+
+3. Test
+
+it("should create 5 start if strength is 5", () => {
+  const tree = renderer.create(<Fist strength={5} />);
+
+  expect(tree).toMatchSnapshot();
+});
+
+
+4. Uruchom testy
+
+npm test
+
+-> zmień wartość rating na 4 - test nie przeszedł
+-> wciśnij u (update test) - test przeszedł
+-> zmień rating z powrotem na 5 - test znowu nie przeszedł
+
+5. Zadanie -> Napisz test dla wartości 2
+
+
+Deployment
+
+Firebase
+
+Przed deployment utwórz projekt na https://firebase.google.com/ np o naziwe React-Test
+
+1. Instalacja Firebase tools
+
+npm install -g firebase-tools
+
+2. Logowanie
+
+firebase login
+
+3. Zmień url do danych (api/coursesApi.js to samo można zrobić dla categoryApi.js)
+
+const baseUrl =
+  "https://my-json-server.typicode.com/VadimPeczynski/JsonServerDemo/courses/";
+
+
+3. Zbuduj aplikację
+
+npm run build
+
+4. Inicjalizacja
+
+firebase init
+
+-> Are you ready to proceed? (Wpisz y i Enter)
+-> Hosting: Configure files for Firebase Hosting and (optionally) set up GitHub Action deploys (strzałki i spacja, a następnie Enter)
+-> Use an existing project (Enter)
+-> wybierz projekt
+-> What do you want to use as your public directory? (wpisz build)
+-> Configure as a single-page app (rewrite all urls to /index.html)? Yes
+-> Set up automatic builds and deploys with GitHub? No
+-> File public/index.html already exists. Overwrite? No
+
+
+
+5. Emulator
+
+firebase emulators:start
+
+6. Deployment
+
+firebase deploy

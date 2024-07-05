@@ -1,0 +1,184 @@
+1. Props - stars
+
+import "../styles/star.css";
+
+function Star(props) {
+  return (
+    <div
+      className="crop"
+      style={{ width: props.rating ? (90 / 5) * props.rating : 0 }}
+      title={props.rating}
+    >
+      <div className="stars">
+        <span className="fa-solid fa-star-sharp"></span>
+        <span className="fa-solid fa-star-sharp"></span>
+        <span className="fa-solid fa-star-sharp"></span>
+        <span className="fa-solid fa-star-sharp"></span>
+        <span className="fa-solid fa-star-sharp"></span>
+      </div>
+    </div>
+  );
+}
+
+export default Star;
+
+2. CSS dla Star
+
+.crop {
+  overflow: hidden;
+}
+
+.stars {
+  width: 90px;
+  cursor: pointer;
+}
+
+3.Event handler
+
+Parent:
+
+onClick={(rating) => handleFistClick(rating)}
+
+function handleFistClick(rating) {
+    console.log(`Kliknięto ${rating}`);
+  }
+
+Child: 
+
+onClick={() => props.onClick(props.rating)}
+
+4. Instalowanie React-Router
+
+npm install react-router-dom@6.3.0
+
+5. Inicjalizacja Routera
+
+import { BrowserRouter as Router } from "react-router-dom";
+
+<Router>
+  <App />
+</Router>
+
+6. Routes
+
+import { Route, Routes } from "react-router-dom";
+
+<Routes>
+     <Route path="/" exact element={<CourseList />}></Route>
+</Routes>
+
+7. Komponent NavBar
+
+function NavBar() {
+  return (
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Course App</a>
+      <div className="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul className="navbar-nav">
+          <li className="nav-item">
+            <a class="nav-link" href="#">Lista kursów</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  );
+}
+
+export default NavBar;
+
+8. PageNotFound
+
+<div className="card">
+  <h5 className="card-header">Nie znaleziono strony</h5>
+  <div className="card-body"></div>
+</div>
+
+9. Link
+
+import { Link } from "react-router-dom";
+
+<Link to="/" className="btn btn-outline-secondary">
+          Powrót
+        </Link>
+
+10. "No match"
+
+<Route path="*" element={<PageNotFound />} />
+
+11. Course details
+
+import { Link } from "react-router-dom";
+
+<div className="card">
+      <h5 className="card-header">{ 'Informacje o kursie: ' }</h5>
+      <div className="card-body">
+      </div>
+      <div className="card-footer">
+        <Link type="button" className="btn btn-outline-secondary" to="/">
+          <i className="fa fa-chevron-left"></i> Powrót
+        </Link>
+      </div>
+    </div>
+
+12. Routing z parametrem
+
+<Route path="/course-details/:id" element={<CourseDetails/>}></Route>
+
+import { Link } from "react-router-dom";
+
+<Link to={"/course-details/" + course.id}>{course.name}</Link>
+
+13. Url z parametrami
+
+let { id } = useParams();
+
+14. Pobieranie danych po id
+
+const [course, setCourse] = useState({});
+
+  useEffect(() => {
+    getCourseById(id).then((_course) => {
+      setCourse(_course);
+    });
+  }, [id]);
+
+15. Zadanie - wypełnić CourseDetails danymi
+
+<div className="card-body">
+        <div className="row">
+          <div className="col-md-6">
+            <div className="row">
+              <div className="col-md-3 text-left">Nazwa:</div>
+              <div className="col-md-6 text-left"></div>
+            </div>
+            <div className="row">
+              <div className="col-md-3 text-left">Kategoria:</div>
+              <div className="col-md-6 text-left"></div>
+            </div>
+            <div className="row">
+              <div className="col-md-3 text-left">Czas trwania:</div>
+              <div className="col-md-6 text-left"></div>
+            </div>
+            <div className="row">
+              <div className="col-md-3 text-left">Opis:</div>
+              <div className="col-md-6 text-left"></div>
+            </div>
+            <div className="row">
+              <div className="col-md-3 text-left">Cena:</div>
+              <div className="col-md-6 text-left"></div>
+            </div>
+            <div className="row">
+              <div className="col-md-3 text-left">Ocena:</div>
+              <div className="col-md-6 text-left"></div>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <img
+              className="img-responsive"
+              style={{ width: 200, margin: 2 }}
+              title={course.name}
+              alt={course.name}
+            />
+          </div>
+        </div>
+      </div>

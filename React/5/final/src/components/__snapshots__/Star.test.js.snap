@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should create 5 stars if rating is 5 1`] = `
+<div
+  className="crop"
+  onClick={[Function]}
+  style={
+    Object {
+      "width": 90,
+    }
+  }
+  title={5}
+>
+  <div
+    className="stars"
+  >
+    <span
+      className="fa-solid fa-star"
+    />
+    <span
+      className="fa-solid fa-star"
+    />
+    <span
+      className="fa-solid fa-star"
+    />
+    <span
+      className="fa-solid fa-star"
+    />
+    <span
+      className="fa-solid fa-star"
+    />
+  </div>
+</div>
+`;

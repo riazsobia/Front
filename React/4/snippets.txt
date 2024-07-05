@@ -1,0 +1,220 @@
+1. Instalacja
+
+npm install @reduxjs/toolkit@1.8.2 react-redux@8.0.2
+
+2. Utworzenie store'a (nowy plik src/redux/configureAppStore.js)
+
+import { configureStore } from "@reduxjs/toolkit";
+
+export default function configureAppStore(initialState) {
+  return configureStore({
+    reducer: {},
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+    devTools: process.env.NODE_ENV !== "production",
+    preloadedState: initialState,
+  });
+}
+
+3.Provider
+
+import { Provider } from "react-redux";
+import configureAppStore from "./redux/configureAppStore";
+
+const store = configureAppStore();
+
+<Provider store={store}>
+    <Router>
+      <App />
+    </Router>
+  </Provider>
+
+4. Utworzenie reducera (.../redux/reducers/courseReducer.js)
+
+export default function courseReducer(state = {}, action) {
+  switch (action.type) {
+    default:
+      return state;
+  }
+}
+
+(configureAppStore.js)
+import courseReducer from "./reducers/courseReducer";
+
+reducer: { courses: courseReducer }
+
+5. Utworzenie selectora (CoursesTable.js)
+
+import { useSelector } from "react-redux";
+
+const showImage = useSelector(({ courses }) => courses.showImage);
+
+
+6. Utworzenie akcji  (.../redux/actions/courseActions.js)
+
+export function toggleShowImage() {
+  return { type: "TOGGLE_SHOW_IMAGE" };
+}
+
+7. Dodanie metody do reducera
+
+case "TOGGLE_SHOW_IMAGE":
+      return {
+        ...state,
+        showImage: !state.showImage,
+      };
+
+8. Dodanie dispatch akcji
+
+import { useDispatch, useSelector } from "react-redux";
+import { toggleShowImage } from "../redux/actions/courseActions";
+
+const dispatch = useDispatch();
+
+function onLogoButtonClick() {
+    dispatch(toggleShowImage());
+  }
+
+9. Utworzenie pliku z nazwami akcji (.../redux/action/actionTypes.js)
+
+export const TOGGLE_SHOW_IMAGE = "TOGGLE_SHOW_IMAGE";
+
+
+(courseReducer.js)
+import * as types from "../actions/actionTypes";
+
+case types.TOGGLE_SHOW_IMAGE:
+
+(courseActions.js)
+
+import * as types from "./actionTypes";
+
+return { type: types.TOGGLE_SHOW_IMAGE };
+
+10. Thunk (side effect)
+
+import * as courseApi from "../../api/coursesApi";
+
+export function loadCourses() {
+  return function(dispatch) {
+    return courseApi.getCourses()
+      .then((courses) => {
+        dispatch(loadCoursesSuccess(courses));
+      })
+      .catch((error) => {
+        throw error;
+      });
+  };
+}
+
+11. Utworzenie akcji na sukces/porażkę
+
+(trzeba dodać nową stałą do actioTypes.js)
+export function loadCoursesSuccess(courses) {
+  return { type: types.LOAD_COURSES_SUCCESS, courses: courses };
+}
+
+
+12. Dodanie akcji do reducera
+
+case types.LOAD_COURSES_SUCCESS:
+      return {
+        ...state,
+        data: action.courses,
+      };
+
+
+13. Dodanie selectora (HeroesTable.js)
+
+const courses = useSelector(({ courses }) => courses.data);
+
+14. Dispatch (HeroesTable.js)
+
+function getCoursesList() {
+    dispatch(loadCourses());
+  }
+
+13. Stan początkowy (.../reducers/initialState.js)
+
+const initialState = {
+  courseReducer: {
+    showImage: false,
+    data: [],
+  },
+};
+
+export default initialState;
+
+13a. Wykorzystanie stan początkowego (courseReducer.js)
+
+import initialState from "./initialState";
+
+state = initialState.courseReducer,
+
+
+
+14. Szczegóły kursu (courseDetails.js)
+
+const course = useSelector((state) => {
+    return state.courses.data.find((course) => {
+      return course.id === +id;
+    });
+  });
+
+15. Tworzenie/aktualizacja bohaterów (courseActions.js)
+
+export function saveCourse(course) {
+    return function (dispatch) {
+      return saveCourse(course)
+        .then((savedCourse) => {
+          course.id
+            ? dispatch(updateCourseSuccess(savedCourse))
+            : dispatch(createCourseSuccess(savedCourse));
+        })
+        .catch((error) => {
+          throw error;
+        });
+    };
+  }
+
+16. Dodanie akcji sukcesów
+
+export function createCourseSuccess(course) {
+  return { type: types.CREATE_COURSE_SUCCESS, course };
+}
+
+export function updateCourseSuccess(course) {
+  return { type: types.UPDATE_COURSE_SUCCESS, course };
+}
+
+(actionTypes.js)
+export const CREATE_COURSE_SUCCESS = "CREATE_COURSE_SUCCESS";
+export const UPDATE_COURSE_SUCCESS = "UPDATE_COURSE_SUCCESS";
+
+17. Reducer
+
+    case types.CREATE_COURSE_SUCCESS:
+      return {
+        ...state,
+        data: [...state.data, action.course],
+      };
+    case types.UPDATE_COURSE_SUCCESS:
+      return {
+        ...state,
+        data: state.data.map((course) =>
+          action.course.id === course.id ? action.course : course
+        ),
+      };
+
+18. Dispatch (CourseForm.js)
+
+import { saveCourse } from "../redux/actions/courseActions";
+import { useDispatch } from "react-redux";
+
+const dispatch = useDispatch();
+
+dispatch(saveCourse(course)).then(() => {
+      navigate("/");
+      toast.success("Kurs zapisany!");
+    });
+
+19. Zadanie - dodać akcję do usuwania kursu

@@ -1,0 +1,114 @@
+1. Create react app
+
+npx create-react-app heroes-academy
+
+2. Instalowanie Bootstrap
+
+npm install bootstrap@5.1.3
+
+3. Instalowanie ikon
+
+npm install @fortawesome/fontawesome-free@6.1.1
+
+4. Importowanie css
+
+import "bootstrap/dist/css/bootstrap.min.css";
+import "@fortawesome/fontawesome-free/css/fontawesome.css";
+import "@fortawesome/fontawesome-free/css/solid.css";
+
+5. Budowanie komponentu - class
+
+import React from "react";
+
+class App extends React.Component {
+    render() {
+	 return (<div>
+   	    <h1>Witajcie w Heroes Academy!</h1>
+	</div>);
+    }
+}
+
+6. Budowanie komponentu - function
+
+function CoursesList() {
+  return (
+    <div className="card">
+      <h5 className="card-header">Lista kursów</h5>
+      <div className="card-body"></div>
+    </div>
+  );
+}
+
+export default CoursesList;
+
+7. Budowanie komponentu - arrow function
+
+const CoursesTable = () => {
+  return (
+    <div className="table-responsive">
+      <table className="table">
+        <thead>
+          <tr>
+	    <th></th>
+            <th>Nazwa</th>
+            <th>Kategoria</th>
+            <th>Czas trwania</th>
+            <th>Cena</th>
+            <th>Ocena</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  );
+};
+
+export default CoursesTable;
+
+8. useState
+
+const [courses, setCourses] = useState([]);
+
+9. Row
+
+<tr key={course.id}>
+  <td>
+    <img className="logo" src={course.logoUrl} alt={course.name} />
+  </td>
+  <td>{course.name}</td>
+  <td>{course.category}</td>
+  <td>{course.duration}</td>
+  <td>{course.price} PLN</td>
+  <td>{course.rating}</td>
+</tr>
+
+10. useEffect
+
+useEffect(() => {
+    getCourses().then((_courses) => {
+      setCourses(_courses);
+    });
+  }, []);
+
+11. CSS dla loga
+
+.logo {
+  width: 50px;
+  margin: 3px;
+}
+
+12. Pokaż logo
+
+const [showImage, setShowImage] = useState(false);
+
+function onLogoButtonClick() {
+    setShowImage(!showImage);
+  }
+
+<button
+    className={showImage ? "btn btn-danger" : "btn btn-success"}
+    type="button"
+    onClick={onLogoButtonClick}
+>
+    {showImage ? "Ukryj" : "Pokaż"} logo
+</button>

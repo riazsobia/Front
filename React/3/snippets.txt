@@ -1,0 +1,548 @@
+1. Utworzenie komponentu formularza dla utworzenia kursu
+
+import React from "react";
+
+const CourseForm = (props) => {
+  return <></>;
+};
+
+export default CourseForm;
+
+2. Dodanie formularza do routingu (parametr opcjonalny)
+
+<Route path="/course-form">
+            <Route path=":id" element={<CourseForm />} />
+            <Route path="" element={<CourseForm />} />
+          </Route>
+
+3. Dodanie linku do formularza (CourseList.js)
+
+import { Link } from "react-router-dom";
+
+	<div className="card-footer">
+          <Link className="btn btn-outline-secondary" to="/course-form">
+            Dodaj kurs
+          </Link>
+        </div>
+
+4. Inicjalizacja obiektu kursu
+
+const [course, setCourse] = useState({
+    id: null,
+    name: "",
+    category: "",
+    price: 0,
+    duration: 0,
+    description: "",
+    rating: 0,
+    logoUrl: "",
+    active: false,
+  });
+
+5. Formularz kursu
+
+    <div className="card">
+      <div className="card-header">Dodawanie kursu</div>
+      <div className="card-body container">
+        <form>
+          <div className="mb-3">
+            <label htmlFor="name">Nazwa</label>
+            <input
+              type="text"
+              className="form-control"
+              id="name"
+              name="name"
+              value={course.name}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="category">Kategoria</label>
+            <input
+              type="text"
+              className="form-control"
+              id="category"
+              name="category"
+              value={course.category}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="price">Cena</label>
+            <input
+              type="number"
+              className="form-control"
+              id="price"
+              name="price"
+              value={course.price}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="duration">Czas trwania</label>
+            <input
+              type="number"
+              className="form-control"
+              id="duration"
+              name="duration"
+              value={course.duration}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="rating">Ocena</label>
+            <input
+              type="number"
+              className="form-control"
+              id="rating"
+              name="rating"
+              value={course.rating}
+            />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="description">Opis</label>
+            <textarea
+              className="form-control"
+              id="description"
+              rows="3"
+              name="description"
+              value={course.description}
+            ></textarea>
+          </div>
+          <div className="mb-3 form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="active"
+              name="active"
+              checked={course.active}
+            />
+            <label className="form-check-label" htmlFor="active">
+              Aktywny
+            </label>
+          </div>
+          <button type="submit" className="btn btn-primary me-2">
+            Zapisz
+          </button>
+          <button type="button" className="btn btn-secondary">
+            Anuluj
+          </button>
+        </form>
+      </div>
+    </div>
+
+6. Proste zaktualizowanie wartości
+
+function handleNameChange(event) {
+    const updatedCourse = { ...course, name: event.target.value };
+    setCourse(updatedCourse);
+  }
+
+onChange={handleNameChange}
+
+7. Aktualizowanie wartości dla wszystkich inputów (z wyłaczeniem checkboxów)
+
+function handleChange({ target }) {
+    setCourse({ ...course, [target.name]: target.value });
+  }
+
+7a. Obsługa aktualizowania wartości dla checkbox'ów
+
+function handleChange({ target }) {
+    let value;
+    switch (target.type) {
+      case "checkbox":
+        value = target.checked;
+        break;
+      default:
+        value = target.value;
+        break;
+    }
+    setCourse({ ...course, [target.name]: value });
+  }
+
+
+8. Reużywalne komponenty
+
+import React from "react";
+
+export default function Input(props) {
+  return (
+    <div className="mb-3">
+      <label htmlFor={props.id}>{props.label}</label>
+      <input
+        type={props.type}
+        className="form-control"
+        id={props.id}
+        name={props.name}
+        value={props.value}
+        onChange={props.onChange}
+      />
+    </div>
+  );
+}
+
+
+	<Input
+            id="name"
+            type="text"
+            name="name"
+            label="Nazwa"
+            value={course.name}
+            onChange={handleChange}
+          />
+
+9. PropTypes
+
+import PropTypes from "prop-types";
+
+Input.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  error: PropTypes.string,
+};
+
+Input.defaultProps = {
+    error: "",
+  };
+
+10. Walidacja
+
+<span className="invalid-feedback">{props.error}</span>
+
+let inputClass = "form-control";
+  if (props.error.length > 0) {
+    inputClass += " is-invalid";
+  }
+
+11. Błędy walidacji
+
+function hasValidationErrors() {
+    const _errors = {};
+    if (!course.name) _errors.name = "Nazwa kursu jest wymagana";
+    if (!course.category) _errors.team = "Kategoria kursu jest wymagana";
+    if (course.price < 0)
+      _errors.price = "Cena kursu nie może być mniejsza niż 0";
+    if (course.strength < 0 || course.strength > 5)
+      _errors.rating =
+        "Ocena kursu nie może być mniejsza niż 0 i większa niż 5";
+
+    setErrors(_errors);
+    return Object.keys(_errors).length > 0;
+  }
+
+12. onBlur
+
+function handleBlur() {
+    hasValidationErrors();
+  }
+
+(CourseForm.js)
+onBlur={handleBlur}
+
+(Input.js)
+onBlur={props.onBlur}
+
+
+13. Touched
+
+const [touched, setTouched] = useState({});
+
+(w onBlur w CourseForm)
+setTouched({ ...touched, [target.name]: true });
+
+
+(dla każdego input)
+touched={props.touched.name}
+
+(Input.js)
+if (props.touched && props.error.length > 0)
+
+
+14. Select
+
+import React from "react";
+import PropTypes from "prop-types";
+
+export default function Select(props) {
+  let selectClass = "form-control";
+  if (props.touched && props.error) {
+    selectClass += " is-invalid";
+  }
+
+  return (
+    <div className="mb-3">
+      <label htmlFor={props.id} className="form-label">
+        {props.label}
+      </label>
+      <select
+        className={selectClass}
+        id={props.id}
+        name={props.name}
+        value={props.value}
+        onChange={props.onChange}
+        onBlur={props.onBlur}
+      >
+        <option value="" disabled hidden>
+          Wybierz
+        </option>
+        {props.options.map((option) => {
+          return (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          );
+        })}
+      </select>
+      <span className="invalid-feedback">{props.error}</span>
+    </div>
+  );
+}
+
+Select.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  options: PropTypes.arrayOf(PropTypes.string).isRequired,
+  label: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.string,
+  error: PropTypes.string,
+};
+
+Select.defaultProps = {
+  error: "",
+};
+
+
+
+14a. Opcja domyślna
+
+<option value="" disabled hidden>
+          Wybierz
+        </option>
+
+
+
+14b. Opcje
+
+{props.options.map((option) => {
+          return (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          );
+        })}
+
+
+
+14c. Kategorie
+
+import { getCategories } from "../api/categoryApi";
+
+const [categories, setCategories] = useState([]);
+
+useEffect(() => {
+    getTeams().then((_teams) => {
+      setTeams(_teams);
+    });
+  }, []);
+
+14d. Select
+
+import Select from "./common/Select";
+
+   	<Select
+            label="Kategoria"
+            id="category"
+            name="category"
+            value={course.category}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={errors.category}
+            touched={touched.category}
+            options={categories}
+          />
+
+
+15. Checkbox
+
+import React from "react";
+import PropTypes from "prop-types";
+
+export default function CheckBox(props) {
+  return (
+    <div className="mb-3 form-check">
+      <input
+        type="checkbox"
+        className="form-check-input"
+        id={props.id}
+        name={props.name}
+        checked={props.value}
+        onChange={props.onChange}
+      />
+      <label className="form-check-label" htmlFor={props.id}>
+        {props.label}
+      </label>
+    </div>
+  );
+}
+
+CheckBox.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.bool,
+};
+
+
+15a. Użycie komponentu w CourseForm
+
+import CheckBox from "./common/CheckBox";
+
+          <CheckBox
+            label="Aktywny"
+            id="active"
+            name="active"
+            value={course.active}
+            onChange={handleChange}
+          />
+
+16. Zapisywanie kursu
+
+import { saveCourse } from "../api/coursesApi";
+import { useNavigate } from "react-router-dom";
+
+let navigate = useNavigate();
+
+function handleSubmit(event) {
+    event.preventDefault();
+    if (hasValidationErrors()) {
+      return;
+    }
+    saveCourse(course).then(() => {
+      navigate("/");
+    });
+  }
+
+(podmienić tag form)
+<form onSubmit={handleSubmit}>
+
+17. Pobranie parametru z url
+
+import { useParams } from "react-router-dom";
+
+let { id } = useParams();
+
+
+17a. Edycja kursu
+
+import { getCourseById } from "../api/coursesApi";
+
+useEffect(() => {
+    if (id) {
+      getCourseById(id).then((_course) => {
+        setCourse(_course);
+      });
+    }
+  }, [id]);
+
+18. Link do edycji
+
+	<Link
+          type="button"
+          className="btn btn-outline-success mx-3"
+          to={"/course-form/" + course.id}
+        >
+          Edycja kursu
+        </Link>
+
+18a. Zmiana wyświetlanej nazwy w zależności od zastosowania komponentu
+
+<div className="card-header">{course.id ? "Edycja" : "Dodawanie"} kursu</div>
+
+19. Anulowanie formularza
+
+function handleCancel() {
+    navigate("/");
+  }
+
+20. Blokowanie formularza przy błędnej walidacji
+
+const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
+
+function handleBlur({ target }) {
+    setTouched({ ...touched, [target.name]: true });
+    setIsSubmitEnabled(!hasValidationErrors());
+  }
+
+21. Dodanie disabled dla przycisku Zapisz
+	<button
+            type="submit"
+            className="btn btn-primary me-2"
+            disabled={!isSubmitEnabled}
+          >
+            Zapisz
+          </button>
+
+22. Usuwanie bohatera (w CourseTable.js dla każdego wiersza)
+
+		<td>
+                  <span
+                    className="fas fa-times"
+                    onClick={() => deleteCourseById(course.id)}
+                  ></span>
+                </td>
+
+23. Funkcja do usuwania
+
+function deleteCourseById(id) {
+    deleteCourseById(id).then(() => {
+      getCoursesList();
+    });
+  }
+
+24. Style dla przycisku (nowy plik buttons.css)
+
+.delete {
+  cursor: pointer;
+  color: red;
+}
+
+(CourseTable.js)
+import "../styles/buttons.css";
+
+
+
+
+
+Opcjonalnie: Powiadomienia toast
+
+
+25. Instalacja
+
+npm install react-toastify@8.0.3
+
+26. Dodanie kontenera (App.js)
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
+
+(ponad <NavBar>)
+<ToastContainer autoClose={3000} />
+
+27.Wywołanie toast
+
+import { toast } from "react-toastify";
+
+function handleSubmit(event) {
+    event.preventDefault();
+    if (hasValidationErrors()) {
+      return;
+    }
+    saveCourse(course).then(() => {
+      navigate("/");
+      toast.success("Kurs zapisany!");
+    });
+  }
+
+28. Zadanie - przygotować powiadomienie przy usuwaniu
+
